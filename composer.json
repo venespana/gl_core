@@ -1,16 +1,29 @@
 {
     "name": "grooveland/core",
-    "description": "Grooveland projects core",
+    "description": "A Laravel package to add some functionalities used in Groovie projects",
+    "keywords": [
+        "grooveland",
+        "groovie",
+        "laravel",
+        "gl-core",
+        "core",
+        "groovie_core"
+    ],
     "type": "package",
     "license": "MIT",
     "authors": [
         {
             "name": "Alejandro de Tovar",
-            "email": "venespana159@gmail.com"
+            "email": "venespana159@gmail.com",
+            "role": "Developer"
         }
     ],
     "minimum-stability": "stable",
-    "require": {},
+    "require": {
+        "php": "^7.2",
+        "illuminate/console": "~5.8.0"
+        
+    },
     "autoload": {
         "psr-4": {
             "Grooveland\\Core\\": "src"
