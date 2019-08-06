@@ -1,0 +1,19 @@
+{
+    "name": "grooveland/core",
+    "description": "Grooveland projects core",
+    "type": "package",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alejandro de Tovar",
+            "email": "venespana159@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Grooveland\\Core\\": "src"
+        }
+    }
+}
