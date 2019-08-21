@@ -2,6 +2,7 @@
 
 namespace Grooveland\Core\Console;
 
+use Illuminate\Support\Arr;
 use Illuminate\Console\Parser;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Artisan;
@@ -50,7 +51,7 @@ class Command extends IlluminateCommand
         if ($this->option('verbose') || $force) {
             $this->$type($message);
         }
-        $this->log($message, $log, $force);
+        $this->log($message, $type, $force);
     }
 
     public function log(string $message, string $type = 'info', bool $force = false)
@@ -90,16 +91,13 @@ class Command extends IlluminateCommand
 
     public function form(string $text, array $params = [])
     {
-        $type = 'text';
-        $options = '';
+        $type = Arr::get($params, 'type', 'text');
+        $options = Arr::get($params, 'options', '');
+        $value = Arr::get($params, 'value', null);
         $fields = null;
 
-        if (array_key_exists('type', $params)) {
-            $type = $params['type'];
-        }
-
-        if (array_key_exists('options', $params)) {
-            $options = $params['options'];
+        if (!is_null($value) && !$this->confirm("The field {$text} has the value: {$value}, Do yo wish to change?")) {
+            return $value;
         }
 
         if ($type === 'text') {
@@ -119,11 +117,14 @@ class Command extends IlluminateCommand
             $result = Artisan::output();
 
             if (is_Array($options) && array_key_exists('regex', $options)) {
-                preg_match('/'.$options['regex'].'/', $result, $result);
-                $result = $result[1];
+                $matches = [];
+                preg_match($options['regex'], $result, $matches);
+                if (count($matches) > 0) {
+                    $result = $matches[1];
+                }
             }
-            
-            $field = $result;
+
+            $field = preg_replace('/([\r\n\t])/', '', $result);
         }
 
         return $field;
@@ -149,19 +150,19 @@ class Command extends IlluminateCommand
         $addOptions = 'options=%s';
 
         if (array_key_exists('fg', $options)) {
-            $style .= ($style !== ''? ";" : $style)."fg=".$options['fg'];
+            $style .= ($style !== '' ? ";" : $style) . "fg=" . $options['fg'];
         }
 
         if (array_key_exists('bg', $options)) {
-            $style .= ($style !== ''? ";" : $style)."bg=".$options['bg'];
+            $style .= ($style !== '' ? ";" : $style) . "bg=" . $options['bg'];
         }
 
         if (array_key_exists('options', $options) && length($options['options']) > 0) {
-            $_options = (is_array($options['options']))? implode(',', $options['options']) : $options['options'];
+            $_options = (is_array($options['options'])) ? implode(',', $options['options']) : $options['options'];
             $addOptions = sprintf($addOptions, $_options);
-            $style.=($style !== ''? ";" : $style).$addOptions;
+            $style .= ($style !== '' ? ";" : $style) . $addOptions;
         }
-        
+
         if ($style !== '') {
             $style = "<$style>";
         }
